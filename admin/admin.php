@@ -1,19 +1,11 @@
 <?php
 session_start();
 include "connect.php";
+include "category.php";
 
 if(isset($_SESSION['username'])){
   $username = $_SESSION['username'];
 
-  $users = "SELECT username FROM adminusers";
-  $usersquery = mysqli_query($connect, $users);
-
-  if($usersquery){
-    $usernames = [];
-    while($row = mysqli_fetch_assoc($usersquery)){
-        $usernames[] = $row['username'];
-    }
-  }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -23,6 +15,7 @@ if(isset($_SESSION['username'])){
     <title>News Website Admin Panel</title>
     <!-- Include Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <script src = "admin.js"></script>
 </head>
 <body>
@@ -31,6 +24,7 @@ if(isset($_SESSION['username'])){
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
+
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
@@ -87,41 +81,53 @@ if(isset($_SESSION['username'])){
         <div class="card mt-5">
             <div class="card-body">
                 <h5 class="card-title">Post a News Article</h5>
-                <form id = "newsForm" method = "post" action = "insertarticle.php">
+                <form id = "newsForm" method = "post" action = "insertarticle.php" enctype="multipart/form-data">
                     <div class="form-group">
                         <label for="articleTitle">Title</label>
                         <input type="text" class="form-control" id="articleTitle" name = "title" placeholder="Enter title" required>
                     </div>
+
+                    <div class="form-group">
+                        <label for="articleSubTitle">Subtitle</label>
+                        <input type="text" class="form-control" id="articleSubTitle" name = "subtitle" placeholder="Enter subtitle" required>
+                    </div>
+
                     <div class="form-group">
                         <label for="articleContent">Content</label>
                         <textarea class="form-control" id="articleContent"rows="5" name = "content" placeholder="Enter article content" required></textarea>
                     </div>
                     <div class="form-group">
                         <label for="category">Category</label>
-                        <select class="form-control" id="category" name = "category" onchange = "showinput()" required>
-                            <option>Select category</option>
-                            <!-- Populate with categories from your database -->
-                            <option>Politics</option>
-                            <option>Business</option>
-                            <option>Sports</option>
-                            <option>Technology</option>
-                            <option>Music</option>
-                            <option>Others</option>
+                        <select class="form-control" id="category" name = "category" oninput = "showinput(); changecategory()" required>
                         </select>
                     </div>
 
                     <div class="form-group" id = "othercategorydiv" style= "display:none;">
                         <label for="othercategory">Input Custom Category</label>
-                        <input type="text" class="form-control" name = "others" id="othercategory" placeholder="Enter Custom Category">
+                        <input type="text" class="form-control" name = "others" id="othercategory" placeholder="Enter Custom Category" onblur = "changecategory()">
                     </div>
 
                     <div class="form-group">
-                    <label for="reporter">Reporter</label>
-                    <input class = "form-control" type = "text" id = "reporter" required>
+                        <input type="text" class="form-control" id="existingcategory" name = "submitcategory" readonly>
                     </div>
 
                     <div class="form-group">
-                        <input class="form-control" id="searchreporter" name = "reporter" placeholder="If none, Input 'Nil'">
+                        <label for="reporter">Reporter</label>
+                        <input class = "form-control" type = "text" id = "reporter" name = "reporter" onclick= "toggleDiv('reporterDiv')" readonly required>
+                        <div class= "" id = "reporterDiv" style = "display: none;">
+                            <input class = "form-control" type = "text" id = "searchreporter" placeholder= "Author" width= "70%">
+                        </div>
+                    </div>
+
+                    <button class = "btn btn-transparent text-success" type = "button" id = "guestbtn" onclick = "toggleDiv('addguest')"> Add new guest</button>
+
+                    <div class = "form-group card mt-2" id = "addguest" style = "display:none">
+                        <div class = "card-body" style= "text-align: center">
+                            <label for = "guest" >Add New Guest</label>
+                            <button class = "btn btn-transparent text-danger" type = "button" onclick = "toggleDiv('addguest')" style= "float: right"><i class="fas fa-times"></i></button>
+                            <input class = "form-control" type = "text" id = "guest"><br>
+                            <button type="button" onclick = "addGuest()" id = "submitform" class="btn btn-success mx-auto d-block">Add New Guest</button>
+                        </div>
                     </div>
 
                     <div class = "card-mt-8">
@@ -132,7 +138,7 @@ if(isset($_SESSION['username'])){
                                 <input type="file" accept="image/*" name="image" id="file" onchange="loadFile(event);" class="form-control-file" style= "display: none;">
                             </div>
                             <div class="form-group">
-                                <img id="output" width="200" height= "200px" class="img-thumbnail"/>
+                                <img id="output" width="300" height= "300px" class="img-thumbnail"/>
                             </div>
                         </div>
                     </div>
@@ -154,96 +160,19 @@ if(isset($_SESSION['username'])){
         };
     </script>
 
-<script>
+    <script>
         var usernames = <?php echo json_encode($usernames); ?>;
-
-        function autocomplete(input, list) {
-
-            //Add an event listener to compare the input value with all countries
-            input.addEventListener('input', function () {
-                //Close the existing list if it is open
-                closeList();
-                //searchInput();
-
-                //If the input is empty, exit the function
-                if (!this.value)
-                    return;
-
-                //Create a suggestions <div> and add it to the element containing the input field
-                suggestions = document.createElement('div');
-                suggestions.setAttribute('id', 'suggestions');
-                this.parentNode.appendChild(suggestions);
-
-                //Iterate through all entries in the list and find matches
-                for (let j=0; j < list.length; j++) {
-
-                    if (list[j].toUpperCase().includes(this.value.toUpperCase())) {
-
-                        //If a match is found, create a suggestion <div> and add it to the suggestions <div>
-                        suggestion = document.createElement('div');
-                        suggestion.innerHTML = list[j];
-                        
-                        suggestion.addEventListener('click', function () {
-                            input.value = this.innerHTML;
-                            closeList();
-                        });
-                        suggestion.style.cursor = 'pointer';
-                        
-
-                        suggestions.appendChild(suggestion);
-                    }
-                        
-                }
-
-            });
-
-            function closeList() {
-                let suggestions = document.getElementById('suggestions');
-                if (suggestions)
-                    suggestions.parentNode.removeChild(suggestions);
-            }
-
+        var category = <?php echo json_encode($categories); ?>;
+        
+        var option = "<option>Select Category</option>";
+        for(var i = 0; i < category.length; i++){
+            option += "<option>" + category[i] + "</option>";
         }
+        option += "<option>Others</option>";
+        document.getElementById('category').innerHTML = option;
 
-        function showusers(input, list) {
-
-            //Add an event listener to compare the input value with all countries
-            input.addEventListener('click', function () {
-                closeLists();
-
-                //Create a suggestions <div> and add it to the element containing the input field
-                userdiv = document.createElement('div');
-                userdiv.setAttribute('id', 'userdiv');
-                this.parentNode.appendChild(userdiv);
-
-                //Iterate through all entries in the list and find matches
-                for (let j=0; j < list.length; j++) {
-                    usersbtn = document.createElement('div');
-                    usersbtn.innerHTML = list[j];
-                    
-                    usersbtn.addEventListener('click', function () {
-                        input.value = this.innerHTML;
-                        closeLists();
-                    });
-                    usersbtn.style.cursor = 'pointer';
-                    
-
-                    userdiv.appendChild(usersbtn);
-                    
-                }
-
-            });
-
-            function closeLists() {
-                let users = document.getElementById('userdiv');
-                if (users)
-                    userss.parentNode.removeChild(users);
-            }
-
-        }
-
-        showusers(document.getElementById("reporter"), usernames)
-        autocomplete(document.getElementById("reporter"), usernames);
+        // showusers(document.getElementById("reporter"), usernames)
+        autocomplete(document.getElementById("searchreporter"), usernames);
     </script>
 
 

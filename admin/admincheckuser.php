@@ -11,17 +11,17 @@ if (isset($_POST['email']) && isset($_POST['password'])) {
 	$password = md5(validate($_POST['password']));
 
 	if (empty($email)){
-		header("Location: Login.php?error=Username is required");
+		header("Location: adminlogin.php?error=Username is required");
 		exit();
 	}else if(empty($password)) {
-		header("Location: Login.php?error=Password is required");
+		header("Location: adminlogin.php?error=Password is required");
 		exit();
 	}else{
 		$info = "SELECT * FROM adminusers WHERE email = '$email' ";
 		$SQLpass = mysqli_query($connect, $info);
 
 
-		if (mysqli_num_rows($SQLpass) === 1) {
+		if (mysqli_num_rows($SQLpass) >= 1) {
 		$row = mysqli_fetch_assoc($SQLpass);
 
 			if($row['password'] === $password){

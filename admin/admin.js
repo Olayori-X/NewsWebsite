@@ -38,18 +38,12 @@ function autocomplete(input, list) {
 		//searchInput();
 
 		//If the input is empty, exit the function
-		if (!this.value)
-			return;
+		if (!this.value){
+			suggestions = document.createElement('div');
+			suggestions.setAttribute('id', 'suggestions');
+			this.parentNode.appendChild(suggestions);
 
-		//Create a suggestions <div> and add it to the element containing the input field
-		suggestions = document.createElement('div');
-		suggestions.setAttribute('id', 'suggestions');
-		this.parentNode.appendChild(suggestions);
-
-		//Iterate through all entries in the list and find matches
-		for (let j=0; j < list.length; j++) {
-
-			if (list[j].toUpperCase().includes(this.value.toUpperCase())) {
+			for (let j=0; j < list.length; j++) {
 
 				//If a match is found, create a suggestion <div> and add it to the suggestions <div>
 				suggestion = document.createElement('div');
@@ -62,12 +56,69 @@ function autocomplete(input, list) {
 				suggestion.style.cursor = 'pointer';
 				
 
-				suggestions.appendChild(suggestion);
+				suggestions.appendChild(suggestion);				
 			}
-				
+			return;
+		}else{
+
+			//Create a suggestions <div> and add it to the element containing the input field
+			suggestions = document.createElement('div');
+			suggestions.setAttribute('id', 'suggestions');
+			this.parentNode.appendChild(suggestions);
+
+			//Iterate through all entries in the list and find matches
+			for (let j=0; j < list.length; j++) {
+
+				if (list[j].toUpperCase().includes(this.value.toUpperCase())) {
+
+					//If a match is found, create a suggestion <div> and add it to the suggestions <div>
+					suggestion = document.createElement('div');
+					suggestion.innerHTML = list[j];
+					
+					suggestion.addEventListener('click', function () {
+						document.getElementById('reprter').value = this.innerHTML;
+						closeList();
+					});
+					suggestion.style.cursor = 'pointer';
+					
+
+					suggestions.appendChild(suggestion);
+				}
+					
+			}
 		}
 
 	});
+
+
+	input.addEventListener('click', function(){
+		input.readOnly = false;
+
+		if(!document.getElementById('suggestions')){
+			suggestions = document.createElement('div');
+			suggestions.setAttribute('id', 'suggestions');
+			this.parentNode.appendChild(suggestions);
+
+			for (let j=0; j < list.length; j++) {
+
+				//If a match is found, create a suggestion <div> and add it to the suggestions <div>
+				suggestion = document.createElement('div');
+				suggestion.innerHTML = list[j];
+				
+				suggestion.addEventListener('click', function () {
+					document.getElementById('reporter').value = this.innerHTML;
+					closeList();
+					document.getElementById('reporterDiv').style.display= "none";
+				});
+				suggestion.style.cursor = 'pointer';
+				
+
+				suggestions.appendChild(suggestion);				
+			}	
+		}
+	});
+
+
 
 	function closeList() {
 		let suggestions = document.getElementById('suggestions');
@@ -75,4 +126,22 @@ function autocomplete(input, list) {
 			suggestions.parentNode.removeChild(suggestions);
 	}
 
+}
+
+function toggleDiv(element){
+	var element = document.getElementById(element);
+
+	if(element.style.display == "block"){
+		element.style.display = "none";
+	}else{
+		element.style.display = "block";
+	}
+}
+
+function addGuest(){
+	var guest = document.getElementById('guest').value;
+	if(guest != ''){
+		document.getElementById('reporter').value = guest + '[Guest]';
+	}
+	document.getElementById('guest').value = "";
 }

@@ -6,11 +6,13 @@
     <title>News Website Admin Panel</title>
     <!-- Include Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <script src = "admin.js"></script>
 </head>
 <?php
 include "connect.php";
 include "validate.php";
+include "category.php";
 
 if(isset($_GET['id'])){
     $id = validate($_GET['id']);
@@ -23,10 +25,16 @@ if(isset($_GET['id'])){
         while($row = mysqli_fetch_assoc($querydetails)){
             $newsdetails[] = $row;
         }
+    }
 
-        // header('Content-Type: application/json');
-        // echo json_encode($newsdetails);
-        // print_r($newsdetails[0]['reporter']);
+    $users = "SELECT reporter FROM reporters";
+    $usersquery = mysqli_query($connect, $users);
+
+    if($usersquery){
+        $usernames = [];
+        while($row = mysqli_fetch_assoc($usersquery)){
+            $usernames[] = $row['reporter'];
+        }
     }
 ?>
 <body>
@@ -95,12 +103,18 @@ if(isset($_GET['id'])){
         <div class="card mt-5">
             <div class="card-body">
                 <h5 class="card-title">Post a News Article</h5>
-                <form id = "newsForm" method = "post" action = "updatearticle.php">
+                <form id = "newsForm" method = "post" action = "updatearticle.php" enctype="multipart/form-data">
                     <input type = "hidden" value = "<?php echo $id; ?>" name = "id">
                     <div class="form-group">
                         <label for="articleTitle">Title</label>
                         <input type="text" class="form-control" id="articleTitle" name = "title" placeholder="Enter title" value = "<?php echo $newsdetails[0]['title'];?>" required>
                     </div>
+
+                    <div class="form-group">
+                        <label for="articleSubTitle">Subtitle</label>
+                        <input type="text" class="form-control" id="articleSubTitle" name = "subtitle" placeholder="Enter subtitle" value = "<?php echo $newsdetails[0]['subtitle'];?>" required>
+                    </div>
+
                     <div class="form-group">
                         <label for="articleContent">Content</label>
                         <textarea class="form-control" id="articleContent" rows="11" name = "content" placeholder="Enter article content" required><?php echo $newsdetails[0]['content'];?></textarea>
@@ -108,14 +122,6 @@ if(isset($_GET['id'])){
                     <div class="form-group">
                         <label for="category">Category</label>
                         <select class="form-control" id = "category" name = "category" onchange = "showinput(); changecategory()">
-                            <option>Select category</option>
-                            <!-- Populate with categories from your database -->
-                            <option>Politics</option>
-                            <option>Business</option>
-                            <option>Sports</option>
-                            <option>Technology</option>
-                            <option>Music</option>
-                            <option>Others</option>
                         </select>
                     </div>
 
@@ -128,12 +134,22 @@ if(isset($_GET['id'])){
                         <input type="text" class="form-control" id="existingcategory" name = "submitcategory" value = "<?php echo($newsdetails[0]['category']);?>" readonly>
                     </div>
 
-                    <div class="form-group card mt-2">
-                        <div class = "card-body">
-                            <label for="reporter">Reporter</label>
-                            <input type="text" class="form-control" id="reporter" name = "reporter" placeholder="If none, Input 'Nil'" required><br>
+                    <div class="form-group">
+                        <label for="reporter">Reporter</label>
+                        <input class = "form-control" type = "text" id = "reporter" name = "reporter" onclick= "toggleDiv('reporterDiv')" value = "<?php echo($newsdetails[0]['reporter']);?>" readonly required>
+                        <div class= "" id = "reporterDiv" style = "display: none;">
+                            <input class = "form-control" type = "text" id = "searchreporter" placeholder= "Author" width= "70%">
+                        </div>
+                    </div>
 
-                            <button type="button" id = "submitform" class="btn btn-success mx-auto d-block">Add New Guest</button>
+                    <button class = "btn btn-transparent text-success" type = "button" id = "guestbtn" onclick = "toggleDiv('addguest')"> Add new guest</button>
+
+                    <div class = "form-group card mt-2" id = "addguest" style = "display:none">
+                        <div class = "card-body" style= "text-align: center">
+                            <label for = "guest" >Add New Guest</label>
+                            <button class = "btn btn-transparent text-danger" type = "button" onclick = "toggleDiv('addguest')" style= "float: right"><i class="fas fa-times"></i></button>
+                            <input class = "form-control" type = "text" id = "guest"><br>
+                            <button type="button" onclick = "addGuest()" id = "submitform" class="btn btn-success mx-auto d-block">Add New Guest</button>
                         </div>
                     </div>
 
@@ -167,11 +183,18 @@ if(isset($_GET['id'])){
         };
         // Function to trigger a click event on the hidden file input
 
-        function triggerFileInput() {
-            document.getElementById('file').click();
+        var usernames = <?php echo json_encode($usernames); ?>;
+        var category = <?php echo json_encode($categories); ?>;
+        
+        var option = "<option>Select Category</option>";
+        for(var i = 0; i < category.length; i++){
+            option += "<option>" + category[i] + "</option>";
         }
+        option += "<option>Others</option>";
+        document.getElementById('category').innerHTML = option;
 
-        autocomplete("")
+        // showusers(document.getElementById("reporter"), usernames)
+        autocomplete(document.getElementById("searchreporter"), usernames);
     </script>
 
 </body>

@@ -38,7 +38,8 @@ if($txtCompanyCode == $code){
 					$rs = mysqli_query($connect, $sql);
 
 					if($rs){
-						echo "Account successfully created";
+						$addreporter = "INSERT INTO reporters(reporter, reportertype) VALUES('$txtUsername', 'user')";
+                        $addreporterquery = mysqli_query($connect, $addreporter);
 						header("Location: adminlogin.php");
 						exit();
 					}
@@ -51,7 +52,8 @@ if($txtCompanyCode == $code){
 			$rs = mysqli_query($connect, $sql);
 
 			if($rs){
-				echo "Account successfully ceated";
+				$addreporter = "INSERT INTO reporters(reporter, reportertype) VALUES('$txtUsername', 'user')";
+                $addreporterquery = mysqli_query($connect, $addreporter);
 				header("Location: adminlogin.php");
 				exit();
 			}

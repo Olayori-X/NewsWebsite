@@ -1,3 +1,4 @@
+<?php include 'category.php'; include 'time.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -67,10 +68,64 @@
             </div>
         </div>
 
+       <div>
+            <form method = "post" action = "">
+                <label for = "category">Category</label>
+                <select id = "category"></select>
+                <label for = "reporter">Reporters</label>
+                <select id = "reporter"></select>
+                <label for = "month">Month</label>
+                <select id = "month">
+                    <option>Select</option>
+                    <option>January</option>
+                    <option>February</option>
+                    <option>March</option>
+                    <option>April</option>
+                    <option>May</option>
+                    <option>June</option>
+                    <option>July</option>
+                    <option>August</option>
+                    <option>September</option>
+                    <option>October</option>
+                    <option>November</option>
+                    <option>December</option>
+                </select>
+
+                <label for = "year">Year</label>
+                <select id = "year"></select>
+
+                <button type = "button" onclick = "getselectedarticles()" id = "submit" name = "submit">Filter</button>
+            </form>
+       </div>
         <div>
             <h5 class="card-title">Articles</h5>
             <div class = "card-body" id = "articles"></div>
         </div>
     </div>
+
+    <script>
+        var usernames = <?php echo json_encode($usernames); ?>;
+        var category = <?php echo json_encode($categories); ?>;
+
+        get(usernames, document.getElementById('reporter'));
+        get(category, document.getElementById('category'));
+
+        var currentyear = '<?php echo $currentYear; ?>';
+        var yeardiff = currentyear - 2020;
+
+        var years = [];
+        for(var i = 0; i < yeardiff; i++){
+            years.push(currentyear);
+            currentyear--;
+        }
+
+
+        var yearoptions = '<option>Select</option>';
+        for(var i = 0; i < years.length; i++){
+            yearoptions += '<option>' + years[i] + '<option>';
+        }
+
+        document.getElementById('year').innerHTML = yearoptions;
+    </script>
 </body>
 </html>
