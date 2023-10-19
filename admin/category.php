@@ -20,4 +20,5 @@ $users = "SELECT reporter FROM reporters";
         $usernames[] = $row['reporter'];
     }
   }
+  
 ?>

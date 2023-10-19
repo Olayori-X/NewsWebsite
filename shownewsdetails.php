@@ -90,7 +90,7 @@ if(isset($_SESSION['username'])){
             <article>
                 <?php if($articleinfo[0]['image'] != ''){ ?>
                 <div class="text-center">
-                    <img src="admin/<?php echo $articleinfo[0]['image']; ?>" width= '300px' alt="Article Image" class="img-fluid">
+                    <img src="admin/uploads/<?php echo $articleinfo[0]['image']; ?>" width= '300px' alt="Article Image" class="img-fluid">
                 </div>
                 <?php } ?>
                 <p>

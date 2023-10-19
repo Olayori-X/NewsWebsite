@@ -27,41 +27,40 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         $uploadOk = 0;
     } else {
         $uploadOk = 1;
-        // Check if file already exists
-        if (file_exists($target_file)) {
-            header("Location: admin.php?message=Sorry, file already exists.");
+        // Check file size
+        if ($_FILES["image"]["size"] > 500000) {
+            header("Location: admin.php?message=Sorry, File limit is 50MB");
             $uploadOk = 0;
         }else{
-            // Check file size
-            if ($_FILES["image"]["size"] > 50000) {
-                header("Location: admin.php?message=Sorry, File limit is 50MB");
+            // Allow certain file formats
+            if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
+            && $imageFileType != "gif" ) {
+                header("Location: admin.php?message=Sorry, only JPG, JPEG, PNG & GIF files are allowed.");
                 $uploadOk = 0;
-            }else{
-                // Allow certain file formats
-                if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
-                && $imageFileType != "gif" ) {
-                    header("Location: admin.php?message=Sorry, only JPG, JPEG, PNG & GIF files are allowed.");
-                    $uploadOk = 0;
-                }else {
-                    if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
-                        $image = "uploads/" . basename($_FILES["image"]["name"]);
-                        if(strpos($reporter, '[Guest]')){
-                            $addreporter = "INSERT INTO reporters(reporter, reportertype) VALUES('$reporter', 'guest')";
-                            $addreporterquery = mysqli_query($connect, $addreporter);
+            }else {
+                if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
+                    $image =  basename($_FILES["image"]["name"]);
+                    if(strpos($reporter, '[Guest]')){
+                        $addreporter = "INSERT INTO reporters(reporter, reportertype) VALUES('$reporter', 'guest')";
+                        $addreporterquery = mysqli_query($connect, $addreporter);
+                    }
+                    if(!(in_array($category, $categories))){
+                        $addcategory = "INSERT INTO category(categories) VALUES('$category')";
+                        $addcategoryquery = mysqli_query($connect, $addcategory);
+                    }
+                    $insertarticle = "INSERT INTO articletable(title, subtitle, content, category, reporter, image, date, month, year) VALUES ('$title', '$subtitle', '$content', '$category', '$reporter', '$image', '$dateadded', '$currentMonth', '$currentYear')";
+                    
+                    $insertquery = mysqli_query($connect, $insertarticle);
+        
+                    if($insertquery){
+                        $time = $currentHour. ":". $currentMinute; 
+                        $insertactivity = "INSERT INTO activitytable(username, activity, time, date, month, year) VALUES('$user', 'Posted $title', '$time', '$currentFullDate', '$currentMonth', '$currentYear')";
+                        $insertactivityquery = mysqli_query($connect, $insertactivity);
+                        if($insertactivityquery){
+                            header("Location: newpost.php");
                         }
-                        if(!(in_array($category, $categories))){
-                            $addcategory = "INSERT INTO category(categories) VALUES('$category')";
-                            $addcategoryquery = mysqli_query($connect, $addcategory);
-                        }
-                        $insertarticle = "INSERT INTO articletable(title, subtitle, content, category, reporter, image, date, month, year) VALUES ('$title', '$subtitle', '$content', '$category', '$reporter', '$image', '$dateadded', '$currentMonth', '$currentYear')";
-                        
-                        $insertquery = mysqli_query($connect, $insertarticle);
-            
-                        if($insertquery){
-                            header("Location: admin.php");
-                        }else{
-                            echo "Error";
-                        }
+                    }else{
+                        echo "Error";
                     }
                 }
             }

@@ -22,14 +22,16 @@ function changecategory(){
     var categoryvalue = category.value;
     if(othercategory.value != ""){
         document.getElementById("existingcategory").value = othercategory.value;
+		document.getElementById("submitcategory").value = othercategory.value;
     }else if(categoryvalue.toLowerCase() != "others"){
         document.getElementById("existingcategory").value = category.value;
+		document.getElementById("submitcategory").value = category.value;
     }else{
         console.log("nothing");
     }
 }
 
-function autocomplete(input, list) {
+function autocomplete(input, list, hidden) {
 
 	//Add an event listener to compare the input value with all countries
 	input.addEventListener('input', function () {
@@ -51,6 +53,7 @@ function autocomplete(input, list) {
 				
 				suggestion.addEventListener('click', function () {
 					input.value = this.innerHTML;
+					hidden.value = this.innerHTML;
 					closeList();
 				});
 				suggestion.style.cursor = 'pointer';
@@ -76,7 +79,8 @@ function autocomplete(input, list) {
 					suggestion.innerHTML = list[j];
 					
 					suggestion.addEventListener('click', function () {
-						document.getElementById('reprter').value = this.innerHTML;
+						document.getElementById('reporter').value = this.innerHTML;
+						hidden.value = this.innerHTML;
 						closeList();
 					});
 					suggestion.style.cursor = 'pointer';
@@ -107,6 +111,7 @@ function autocomplete(input, list) {
 				
 				suggestion.addEventListener('click', function () {
 					document.getElementById('reporter').value = this.innerHTML;
+					hidden.value = this.innerHTML;
 					closeList();
 					document.getElementById('reporterDiv').style.display= "none";
 				});
@@ -142,6 +147,7 @@ function addGuest(){
 	var guest = document.getElementById('guest').value;
 	if(guest != ''){
 		document.getElementById('reporter').value = guest + '[Guest]';
+		document.getElementById('submittedreporter').value = guest + '[Guest]';
 	}
 	document.getElementById('guest').value = "";
 }

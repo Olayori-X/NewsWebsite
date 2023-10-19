@@ -11,8 +11,8 @@
 </head>
 <body>
     
-
 <?php include 'UItrial.php'; ?>
+
 <div class="container mt-5">
         <div class = "row">
             <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
@@ -39,26 +39,26 @@
                 <div class="col-md-4">
                     <div class="card mb-4">
                         <div class="card-body">
-                            <h5 class="card-title">Users</h5>
-                            <p class="card-text">Manage user accounts.</p>
-                            <a href="reporters.php" class="btn btn-primary">Go to Users</a>
+                            <h5 class="card-title">Categories</h5>
+                            <p class="card-text">Manage article categories.</p>
+                            <a href="categories.php" class="btn btn-primary">Go to Categories</a>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div>
-                <h5 class="card-title">Categories</h5>
-                <div class = "card-body" id = "categories"></div>
+                <h5 class="card-title">Authors</h5>
+                <div class = "card-body" id = "reporters"></div>
             </div>
         </main>
     </div>
 </div>
 
     <script>
-        var categoryarray = <?php echo json_encode($categories); ?>;
+        var reporterarray = <?php echo json_encode($usernames); ?>;
 
-        listcategory(categoryarray);
+        listreporter(reporterarray);
     </script>
 </body>
 </html>

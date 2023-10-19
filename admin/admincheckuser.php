@@ -1,6 +1,7 @@
 <?php
 session_start();
 include 'connect.php';
+include 'time.php';
 
 
 
@@ -25,11 +26,15 @@ if (isset($_POST['email']) && isset($_POST['password'])) {
 		$row = mysqli_fetch_assoc($SQLpass);
 
 			if($row['password'] === $password){
-				echo "Logged in!";
 				$_SESSION['username'] = $row['username'];
-				echo $_SESSION['username'];
-				header("Location: admin.php");
-				exit();
+				$user = $_SESSION['username'];
+				$time = $currentHour. ":". $currentMinute; 
+				$insertactivity = "INSERT INTO activitytable(username, activity, time, date, month, year) VALUES('$user', 'Logged in', '$time', '$currentFullDate', '$currentMonth', '$currentYear')";
+				$insertactivityquery = mysqli_query($connect, $insertactivity);
+				if($insertactivityquery){
+					header("Location: index.php");
+					exit();
+				}
 			}else{
 				header("Location: adminlogin.php?error=Incorrect Password");
 				exit();	

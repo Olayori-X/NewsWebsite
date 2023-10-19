@@ -24,7 +24,7 @@ function getarticle(){
 function listarticle(info){
     var lists = '';
     var recentnews = '';
-    for(var i = 0; i < 7; i++){
+    for(var i = info.length - 7; i < info.length; i++){
         lists += "<a href = 'shownewsdetails.php?id=" + info[i].id + "'><p>" + info[i].title + "</p></a>";
     }
     document.getElementById('headlinelists').innerHTML = lists;
