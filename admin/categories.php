@@ -1,5 +1,6 @@
 <?php include "category.php"; ?>
 <!DOCTYPE html>
+<!-- This is the page to display the fetched categories -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">

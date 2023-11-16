@@ -15,9 +15,11 @@
                     <div class="card-header">Admin Login</div>
                     <div class="card-body">
                         <form action="admincheckuser.php" method="POST">
+                            <!--This is the php code to get errors from the server -->
                             <?php if(isset($_GET['error'])){?>
                                 <p><?php echo $_GET['error'];?></p>
                             <?php } ?>
+                            <!-- It ends here -->
                             <div class="mb-3">
                                 <label for="email" class="form-label">Email</label>
                                 <input type="email" class="form-control" id="email" name="email" required>

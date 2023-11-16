@@ -1,3 +1,4 @@
+//This is the JS code to get create a dynamic functionality within the signup form
 function validateForm() {
     var signupform = document.getElementById("signupForm");
     var password = document.getElementById("password").value;

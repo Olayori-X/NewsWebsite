@@ -9,9 +9,12 @@
 <body>
     <div class="container mt-5">
         <h2>Admin Sign Up</h2>
+        <!--This is the php code to get errors from the server -->
         <?php if(isset($_GET['error'])){ ?>
             <p><?php echo $_GET['error'] ?></p>
         <?php } ?>
+        <!-- It ends here -->
+        <!-- This is the div to show errors derived by the browser -->
         <div id = "error" class = "alert alert-primary" style = "display : none;"></div>
         <form action="admincreateusers.php" method="POST" id = "signupForm">
             <div class="form-row">

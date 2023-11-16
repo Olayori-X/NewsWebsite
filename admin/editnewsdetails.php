@@ -1,4 +1,5 @@
 <?php
+//This is a page to edit a particular article that had been posted. It gets that article from the database, and displays the details that can be changed by the user.
 include "connect.php";
 include "validate.php";
 include "category.php";

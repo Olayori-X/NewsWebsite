@@ -1,5 +1,6 @@
 <?php include 'category.php'; include 'time.php'; ?>
 <!DOCTYPE html>
+<!-- This is the page to display the fetched articles and the details -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">

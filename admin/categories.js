@@ -1,3 +1,4 @@
+//The function to fetch all the posted articles categories and put them in a table
 function listcategory(info){
     var div = "<table class = 'table table-bordered'><tr><th>S/N</th><th>Category</th><tr>";
     var sn = 0;

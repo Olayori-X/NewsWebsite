@@ -1,4 +1,5 @@
 <?php
+//This gets the categories and the reporters from the database. Not a page to be displayed
 include "connect.php";
 
 $getcategory = "SELECT * FROM category";

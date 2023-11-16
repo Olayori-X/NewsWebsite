@@ -1,4 +1,5 @@
 <?php
+//This is not a page. This implaements the server functionality for the user verification on the admin site
 session_start();
 include 'connect.php';
 include 'time.php';

@@ -1,4 +1,5 @@
 <?php
+//This is not a page. This implements the server functionality for user registration on the admin site
 include 'connect.php';
 include 'validate.php';
 

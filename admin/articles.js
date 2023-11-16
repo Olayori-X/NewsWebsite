@@ -1,5 +1,6 @@
 var articleinfo;
 
+//The function to fetch all the posted articles headlines, and the details regarding the articles and include them in a table
 function getarticle(){
     fetch("getarticles.php")
     .then(response => response.json())
@@ -29,6 +30,7 @@ function get(data, ID) {
     ID.innerHTML = option;
 }
 
+//The function to implement the search functionality, and fetch the searched article from the server and display it on the browser
 function getselectedarticles(){
     let newsinfo = {
         'category' : document.getElementById('category').value,
